@@ -7,6 +7,8 @@ let city = null;
 //criaEstadoPorCidade();
 //retEstadosComMaisCidades();
 //retEstadosComMenosCidades();
+//retCidadeMaiorNomePorEstado();
+//retCidadeMenorNomePorEstado();
 async function criaEstadoPorCidade() {
     try {
         const estados = JSON.parse(await fs.readFile("./cidades-estados/Estados.json"));
@@ -77,13 +79,66 @@ async function retEstadosComMenosCidades() {
     console.log(quantCidadeEstado.slice(0, 5));
 
 }
+//Execicio 5
+async function retNomeCidade(uf) {
+    const data = JSON.parse(await fs.readFile(`./resultStates/${uf}.json`));
+    const nomeCidade = []
+    for (const item of data) {
+        nomeCidade.push(item.cidade);
+    }
+    return nomeCidade;
+}
 
 async function retCidadeMaiorNomePorEstado() {
     const estados = JSON.parse(await fs.readFile("./cidades-estados/Estados.json"));
-    let quantidade = 0;
-    const cidade = [];
-    let count = 0;
+    let nomeCidade = null;
+    const cidades = [];
+    let cidadesComNomeMaior = [];
+    let uf = "";
+
     for (const estado of estados) {
-        cidade.push({UF: estado.cigla})
+        nomeCidade = await retNomeCidade(estado.Sigla)
+        cidades.push({ UF: estado.Sigla, nome: nomeCidade });
     }
+    for (const cidade of cidades) {
+        let nomeMaior = "";
+        uf = cidade.UF;
+        for (let i = 0; i < cidade.nome.length; i++) {
+            let bacon = cidade.nome[i];
+            if (nomeMaior.length < bacon.length) {
+                nomeMaior = cidade.nome[i];
+            }
+        }
+        cidadesComNomeMaior.push({ UF: uf, cidade: nomeMaior });
+    }
+
+    console.log(cidadesComNomeMaior);
 }
+//Execicio 6
+async function retCidadeMenorNomePorEstado() {
+    const estados = JSON.parse(await fs.readFile("./cidades-estados/Estados.json"));
+    let nomeCidade = null;
+    const cidades = [];
+    let cidadesComNomeMaior = [];
+    let uf = "";
+
+    for (const estado of estados) {
+        nomeCidade = await retNomeCidade(estado.Sigla)
+        cidades.push({ UF: estado.Sigla, nome: nomeCidade });
+    }
+    for (const cidade of cidades) {
+        let nomeMaior = cidade.nome[0];
+        uf = cidade.UF;
+        for (let i = 0; i < cidade.nome.length; i++) {
+            let bacon = cidade.nome[i];
+            if (nomeMaior.length > bacon.length) {
+                nomeMaior = cidade.nome[i];
+            }
+        }
+        cidadesComNomeMaior.push({ UF: uf, cidade: nomeMaior });
+    }
+
+    console.log(cidadesComNomeMaior);
+}
+
+
