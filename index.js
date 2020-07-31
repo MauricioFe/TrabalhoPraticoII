@@ -4,11 +4,13 @@ import { promises as fs } from "fs";
 let estadosCidades = [];
 let state = null;
 let city = null;
-//criaEstadoPorCidade();
-//retEstadosComMaisCidades();
-//retEstadosComMenosCidades();
-//retCidadeMaiorNomePorEstado();
-//retCidadeMenorNomePorEstado();
+criaEstadoPorCidade();
+retEstadosComMaisCidades();
+retEstadosComMenosCidades();
+retCidadeMaiorNomePorEstado();
+retCidadeMenorNomePorEstado();
+retMaiorNomeDeCidadeEntreTodosEstados();
+retMenorNomeDeCidadeEntreTodosEstados();
 async function criaEstadoPorCidade() {
     try {
         const estados = JSON.parse(await fs.readFile("./cidades-estados/Estados.json"));
@@ -58,8 +60,8 @@ async function retEstadosComMaisCidades() {
         return b.quant - a.quant;
     })
 
-    const topFive = quantCidadeEstado.slice(0, 5);
-    console.log(topFive);
+    console.log(quantCidadeEstado.slice(0, 5));
+
 }
 //Exercicio 4
 async function retEstadosComMenosCidades() {
@@ -113,13 +115,23 @@ async function retCidadeMaiorNomePorEstado() {
     }
 
     console.log(cidadesComNomeMaior);
+    const newArrayCidades = cidadesComNomeMaior.map(item => {
+        const { UF, cidade } = item;
+        return {
+            name: `${cidade} - ${UF}`
+        }
+    }).sort((a, b) => {
+        return a.name.localeCompare(b.name);
+    });
+    console.log(newArrayCidades)
+    return newArrayCidades;
 }
 //Execicio 6
 async function retCidadeMenorNomePorEstado() {
     const estados = JSON.parse(await fs.readFile("./cidades-estados/Estados.json"));
     let nomeCidade = null;
     const cidades = [];
-    let cidadesComNomeMaior = [];
+    let cidadesComNomeMenor = [];
     let uf = "";
 
     for (const estado of estados) {
@@ -127,18 +139,58 @@ async function retCidadeMenorNomePorEstado() {
         cidades.push({ UF: estado.Sigla, nome: nomeCidade });
     }
     for (const cidade of cidades) {
-        let nomeMaior = cidade.nome[0];
+        let nomeMenor = cidade.nome[0];
         uf = cidade.UF;
         for (let i = 0; i < cidade.nome.length; i++) {
             let bacon = cidade.nome[i];
-            if (nomeMaior.length > bacon.length) {
-                nomeMaior = cidade.nome[i];
+            if (nomeMenor.length > bacon.length) {
+                nomeMenor = cidade.nome[i];
             }
         }
-        cidadesComNomeMaior.push({ UF: uf, cidade: nomeMaior });
+        cidadesComNomeMenor.push({ UF: uf, cidade: nomeMenor });
     }
 
-    console.log(cidadesComNomeMaior);
+    //console.log(cidadesComNomeMenor);
+    const newArrayCidades = cidadesComNomeMenor.map(item => {
+        const { UF, cidade } = item;
+        return {
+            name: `${cidade} - ${UF}`
+        }
+    }).sort((a, b) => {
+        return a.name.localeCompare(b.name);
+    });
+    console.log(newArrayCidades)
+    return newArrayCidades;
 }
+
+//Exercicio 7
+
+async function retMaiorNomeDeCidadeEntreTodosEstados() {
+    const cidadesComMaiorNome = retCidadeMaiorNomePorEstado();
+    const teste = (await cidadesComMaiorNome).map(maior => {
+        const { name } = maior;
+        return {
+            name: name
+        }
+    });
+    const bacon = teste.sort((a, b) => {
+        return b.name.length - a.name.length;
+    })
+    console.log(bacon.splice(0, 1));
+}
+async function retMenorNomeDeCidadeEntreTodosEstados() {
+    const cidadesComMenorNome = retCidadeMenorNomePorEstado();
+    const teste = (await cidadesComMenorNome).map(menor => {
+        const { name } = menor;
+        return {
+            name: name
+        }
+    });
+    const bacon = teste.sort((a, b) => {
+        return a.name.length - b.name.length;
+    })
+    console.log(bacon.splice(0, 1));
+}
+
 
 
