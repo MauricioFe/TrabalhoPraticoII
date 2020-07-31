@@ -74,7 +74,16 @@ async function retEstadosComMenosCidades() {
     quantCidadeEstado.sort((a, b) => {
         return a.quant - b.quant;
     })
-    console.log(quantCidadeEstado.slice(0,5));
+    console.log(quantCidadeEstado.slice(0, 5));
 
 }
 
+async function retCidadeMaiorNomePorEstado() {
+    const estados = JSON.parse(await fs.readFile("./cidades-estados/Estados.json"));
+    let quantidade = 0;
+    const cidade = [];
+    let count = 0;
+    for (const estado of estados) {
+        cidade.push({UF: estado.cigla})
+    }
+}
